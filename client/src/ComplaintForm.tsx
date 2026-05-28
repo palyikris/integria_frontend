@@ -51,6 +51,12 @@ export default function ComplaintForm() {
     fetchCompany();
   }, [slug]);
 
+  useEffect(() => {
+    if (company) {
+      document.title = `Bejelentés | ${company.name} - Integria`;
+    }
+  }, [company]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!company || !isGoodFaith) return;
