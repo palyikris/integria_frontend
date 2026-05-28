@@ -1,0 +1,9 @@
+@import "tailwindcss";
+
+
+
+body {
+  background-color: #f8fafc; /* Slate-50: Clean corporate background */
+  color: #0f172a; /* Slate-900: Deep professional contrast */
+  font-family: system-ui, -apple-system, sans-serif;
+}
