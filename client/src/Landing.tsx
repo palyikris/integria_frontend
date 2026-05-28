@@ -2,20 +2,27 @@ export default function Landing() {
   return (
     <div className="bg-white text-slate-900">
       {/* Hero Section */}
-      <section className="py-20 px-6 text-center">
-        <h1 className="text-5xl font-extrabold mb-6">
-          Integria: Biztonságos Visszaélés-bejelentés
-        </h1>
-        <p className="text-xl text-slate-600 mb-8 max-w-2xl mx-auto">
-          A 2023. évi XXV. törvény szerinti megfelelés automatizálva. Egyszerű,
-          anonim és GDPR-kompatibilis rendszer vállalatoknak.
-        </p>
-        <a
-          href="/portal"
-          className="bg-slate-900 text-white px-8 py-3 rounded-lg font-bold hover:bg-emerald-600 transition"
-        >
-          Bejelentési rendszer megtekintése
-        </a>
+      <section className="py-20 px-6 text-center relative overflow-hidden">
+        <img
+          src="/hero.png"
+          alt="Biztonságos visszaélés-bejelentés illusztráció"
+          className="mx-auto mb-8  top-0 w-full absolute left-1/2 transform -translate-x-1/2 z-0 pointer-events-none select-none"
+        />
+        <div className="relative z-10">
+          <h1 className="text-5xl font-extrabold mb-6">
+            Integria: Biztonságos Visszaélés-bejelentés
+          </h1>
+          <p className="text-xl text-slate-600 mb-8 max-w-2xl mx-auto">
+            A 2023. évi XXV. törvény szerinti megfelelés automatizálva.
+            Egyszerű, anonim és GDPR-kompatibilis rendszer vállalatoknak.
+          </p>
+          <a
+            href="/portal"
+            className="bg-slate-900 text-white px-8 py-3 rounded-lg font-bold hover:bg-emerald-600 transition"
+          >
+            Bejelentési rendszer megtekintése
+          </a>
+        </div>
       </section>
 
       {/* Features Grid */}
@@ -66,7 +73,8 @@ export default function Landing() {
             <h3 className="text-xl font-bold mb-2">Nagyvállalat</h3>
             <p className="text-3xl font-bold mb-4">Egyedi</p>
             <p className="text-slate-600 mb-6 text-sm">
-              Közép- és nagyvállalkozásoknak. Egyedi igények és arculat, prioritásos támogatás, oktatási anyagok, onboarding call
+              Közép- és nagyvállalkozásoknak. Egyedi igények és arculat,
+              prioritásos támogatás, oktatási anyagok, onboarding call
             </p>
           </div>
         </div>
