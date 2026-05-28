@@ -5,6 +5,7 @@ import ClientDashboard from './ClientDashboard';
 import Privacy from "./legal/Privacy";
 import Terms from "./legal/Terms";
 import Compliance from "./legal/Compliance";
+import Landing from "./Landing";
 
 export default function App() {
   return (
@@ -16,6 +17,7 @@ export default function App() {
         <Route path="/legal/privacy" element={<Privacy />} />
         <Route path="/legal/terms" element={<Terms />} />
         <Route path="/legal/compliance" element={<Compliance />} />
+        <Route path="/" element={<Landing />} />
         <Route
           path="*"
           element={
