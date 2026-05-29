@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { supabase } from "./lib/supabase";
 
 export default function Landing() {
   const [isAnnual, setIsAnnual] = useState(true);
@@ -6,6 +7,16 @@ export default function Landing() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState("features");
   const revealRefs = useRef<HTMLElement[]>([]);
+
+  const [contactForm, setContactForm] = useState({
+    name: "",
+    email: "",
+    message: "",
+  });
+  const [isSubmittingContact, setIsSubmittingContact] = useState(false);
+  const [contactStatus, setContactStatus] = useState<
+    "idle" | "success" | "error"
+  >("idle");
 
   // Handle Navbar styling on scroll and active section
   useEffect(() => {
@@ -55,6 +66,31 @@ export default function Landing() {
 
     return () => observer.disconnect();
   }, []);
+
+  const handleContactSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmittingContact(true);
+    setContactStatus("idle");
+
+    try {
+      // Itt cseréld ki a 'contact_messages' részt arra a táblanévre, amire a Resend triggert beállítottad!
+      const { error } = await supabase
+        .from("contact_messages")
+        .insert([contactForm]);
+
+      if (error) throw error;
+
+      setContactStatus("success");
+      setContactForm({ name: "", email: "", message: "" });
+    } catch (error) {
+      console.error("Hiba az üzenet küldésekor:", error);
+      setContactStatus("error");
+    } finally {
+      setIsSubmittingContact(false);
+      // Státusz üzenet eltüntetése pár másodperc után
+      setTimeout(() => setContactStatus("idle"), 5000);
+    }
+  };
 
   const addToRefs = (el: HTMLElement | null) => {
     if (el && !revealRefs.current.includes(el)) {
@@ -701,107 +737,286 @@ export default function Landing() {
       {/* Contact Section */}
       <section
         id="contact"
-        className="py-16 md:py-24 px-6 bg-[#f7f9fb] border-t border-[#e6e8ea]"
+        className="py-16 md:py-24 px-6 bg-[#f7f9fb] border-t border-[#e6e8ea] relative overflow-hidden"
       >
-        <div className="max-w-[640px] mx-auto text-center">
-          <h2 className="font-['Plus_Jakarta_Sans'] text-3xl md:text-4xl font-semibold text-[#131b2e] mb-4">
-            Kapcsolat
-          </h2>
-          <p className="font-['Inter'] text-base text-[#45464d] mb-10">
-            Lépjen kapcsolatba velünk bizalommal bármilyen kérdés, ajánlatkérés
-            vagy támogatás esetén.
-          </p>
-          <div className="flex flex-col gap-6 items-center justify-center text-left md:text-center">
-            <div className="flex items-center gap-4">
-              <svg
-                className="w-6 h-6 text-[#006c4a]"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M3 5.75A2.75 2.75 0 015.75 3h12.5A2.75 2.75 0 0121 5.75v12.5A2.75 2.75 0 0118.25 21H5.75A2.75 2.75 0 013 18.25V5.75z"
-                />
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M21 5.75l-9 7.5-9-7.5"
-                />
-              </svg>
-              <a
-                href="mailto:info@integria.hu"
-                className="text-[#131b2e] font-semibold hover:text-[#006c4a] transition-colors text-lg"
-              >
-                info@integria.hu
-              </a>
+        <div className="absolute top-0 left-0 w-96 h-96 bg-[#006c4a]/5 blur-[100px] rounded-full -ml-48 -mt-48 pointer-events-none"></div>
+
+        <div className="max-w-[1280px] mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-center relative z-10">
+          {/* Bal oldal: Információk */}
+          <div
+            ref={addToRefs}
+            className="opacity-0 translate-y-[30px] transition-all duration-1000 ease-[cubic-bezier(0.65,0,0.35,1)]"
+          >
+            <h2 className="font-['Plus_Jakarta_Sans'] text-3xl md:text-5xl font-extrabold text-[#131b2e] mb-6 leading-tight">
+              Lépjen velünk{" "}
+              <span className="text-[#006c4a] italic">kapcsolatba!</span>
+            </h2>
+            <p className="font-['Inter'] text-lg text-[#45464d] mb-10 leading-relaxed max-w-lg">
+              Készen áll arra, hogy egyszerűsítse vállalata
+              visszaélés-bejelentési folyamatait? Kérjen személyre szabott
+              ajánlatot vagy tegye fel kérdéseit szakértőinknek.
+            </p>
+
+            <div className="flex flex-col gap-8">
+              <div className="flex items-start gap-5 group">
+                <div className="w-12 h-12 bg-white rounded-xl shadow-sm border border-[#c6c6cd]/30 flex items-center justify-center text-[#006c4a] group-hover:scale-110 group-hover:bg-[#006c4a] group-hover:text-white premium-transition">
+                  <svg
+                    className="w-6 h-6"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M3 5.75A2.75 2.75 0 015.75 3h12.5A2.75 2.75 0 0121 5.75v12.5A2.75 2.75 0 0118.25 21H5.75A2.75 2.75 0 013 18.25V5.75z"
+                    />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M21 5.75l-9 7.5-9-7.5"
+                    />
+                  </svg>
+                </div>
+                <div>
+                  <div className="font-['Inter'] text-sm font-semibold text-[#131b2e] mb-1">
+                    Email cím
+                  </div>
+                  <a
+                    href="mailto:info@integria.hu"
+                    className="font-['Inter'] text-base text-[#45464d] hover:text-[#006c4a] transition-colors"
+                  >
+                    info@integria.hu
+                  </a>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-5 group">
+                <div className="w-12 h-12 bg-white rounded-xl shadow-sm border border-[#c6c6cd]/30 flex items-center justify-center text-[#006c4a] group-hover:scale-110 group-hover:bg-[#006c4a] group-hover:text-white premium-transition">
+                  <svg
+                    className="w-6 h-6"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M3 5h2l.4 2M7 10h10l1.6-3H5.4"
+                    />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M7 10v10a2 2 0 002 2h6a2 2 0 002-2V10"
+                    />
+                  </svg>
+                </div>
+                <div>
+                  <div className="font-['Inter'] text-sm font-semibold text-[#131b2e] mb-1">
+                    Telefonszám
+                  </div>
+                  <span className="font-['Inter'] text-base text-[#45464d]">
+                    +36 1 234 5678
+                  </span>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-5 group">
+                <div className="w-12 h-12 bg-white rounded-xl shadow-sm border border-[#c6c6cd]/30 flex items-center justify-center text-[#006c4a] group-hover:scale-110 group-hover:bg-[#006c4a] group-hover:text-white premium-transition">
+                  <svg
+                    className="w-6 h-6"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M17.657 16.657A8 8 0 016.343 5.343M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                    />
+                  </svg>
+                </div>
+                <div>
+                  <div className="font-['Inter'] text-sm font-semibold text-[#131b2e] mb-1">
+                    Iroda
+                  </div>
+                  <span className="font-['Inter'] text-base text-[#45464d]">
+                    1132 Budapest, Váci út 22-24.
+                  </span>
+                </div>
+              </div>
             </div>
-            <div className="flex items-center gap-4">
-              <svg
-                className="w-6 h-6 text-[#006c4a]"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                viewBox="0 0 24 24"
+          </div>
+
+          {/* Jobb oldal: Űrlap */}
+          <div
+            ref={addToRefs}
+            className="opacity-0 translate-y-[30px] transition-all duration-1000 ease-[cubic-bezier(0.65,0,0.35,1)] transition-delay-100"
+          >
+            <div className="bg-white p-8 md:p-10 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-[#c6c6cd]/40 feature-card-glow">
+              <form
+                onSubmit={handleContactSubmit}
+                className="flex flex-col gap-6 relative z-10"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M3 5h2l.4 2M7 10h10l1.6-3H5.4"
-                />
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M7 10v10a2 2 0 002 2h6a2 2 0 002-2V10"
-                />
-              </svg>
-              <span className="text-[#131b2e] font-semibold text-lg">
-                +36 1 234 5678
-              </span>
-            </div>
-            <div className="flex items-center gap-4">
-              <svg
-                className="w-6 h-6 text-[#006c4a]"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M17.657 16.657A8 8 0 016.343 5.343"
-                />
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                />
-              </svg>
-              <span className="text-[#131b2e] text-lg">
-                1132 Budapest, Váci út 22-24. Magyarország
-              </span>
-            </div>
-            <div className="flex items-center gap-4">
-              <svg
-                className="w-6 h-6 text-[#006c4a]"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                viewBox="0 0 24 24"
-              >
-                <circle cx="12" cy="12" r="10" />
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M12 6v6l4 2"
-                />
-              </svg>
-              <span className="text-[#131b2e] text-lg">
-                Hétfő–Péntek: 9:00–17:00
-              </span>
+                <div className="flex flex-col md:flex-row gap-6">
+                  <div className="w-full">
+                    <label
+                      htmlFor="name"
+                      className="block font-['Inter'] text-sm font-semibold text-[#131b2e] mb-2"
+                    >
+                      Név
+                    </label>
+                    <input
+                      type="text"
+                      id="name"
+                      required
+                      value={contactForm.name}
+                      onChange={(e) =>
+                        setContactForm({ ...contactForm, name: e.target.value })
+                      }
+                      className="w-full bg-[#f2f4f6] border border-transparent focus:border-[#006c4a] focus:bg-white text-[#131b2e] text-sm rounded-lg px-4 py-3 outline-none premium-transition focus:ring-4 focus:ring-[#006c4a]/10"
+                      placeholder="Kovács Péter"
+                    />
+                  </div>
+                  <div className="w-full">
+                    <label
+                      htmlFor="email"
+                      className="block font-['Inter'] text-sm font-semibold text-[#131b2e] mb-2"
+                    >
+                      Email cím
+                    </label>
+                    <input
+                      type="email"
+                      id="email"
+                      required
+                      value={contactForm.email}
+                      onChange={(e) =>
+                        setContactForm({
+                          ...contactForm,
+                          email: e.target.value,
+                        })
+                      }
+                      className="w-full bg-[#f2f4f6] border border-transparent focus:border-[#006c4a] focus:bg-white text-[#131b2e] text-sm rounded-lg px-4 py-3 outline-none premium-transition focus:ring-4 focus:ring-[#006c4a]/10"
+                      placeholder="peter@vallalat.hu"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label
+                    htmlFor="message"
+                    className="block font-['Inter'] text-sm font-semibold text-[#131b2e] mb-2"
+                  >
+                    Üzenet
+                  </label>
+                  <textarea
+                    id="message"
+                    rows={4}
+                    required
+                    value={contactForm.message}
+                    onChange={(e) =>
+                      setContactForm({
+                        ...contactForm,
+                        message: e.target.value,
+                      })
+                    }
+                    className="w-full bg-[#f2f4f6] border border-transparent focus:border-[#006c4a] focus:bg-white text-[#131b2e] text-sm rounded-lg px-4 py-3 outline-none premium-transition focus:ring-4 focus:ring-[#006c4a]/10 resize-none"
+                    placeholder="Miben segíthetünk?"
+                  ></textarea>
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={isSubmittingContact}
+                  className="w-full bg-[#131b2e] text-white py-4 rounded-lg text-sm font-semibold glow-on-hover flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed mt-2"
+                >
+                  {isSubmittingContact ? (
+                    <>
+                      <svg
+                        className="animate-spin h-5 w-5 text-white"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        ></circle>
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                        ></path>
+                      </svg>
+                      Küldés folyamatban...
+                    </>
+                  ) : (
+                    <>
+                      Üzenet Küldése
+                      <svg
+                        className="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M14 5l7 7m0 0l-7 7m7-7H3"
+                        />
+                      </svg>
+                    </>
+                  )}
+                </button>
+
+                {/* Státusz üzenetek */}
+                {contactStatus === "success" && (
+                  <div className="p-4 bg-[#006c4a]/10 border border-[#006c4a]/20 text-[#006c4a] rounded-lg text-sm font-medium flex items-center gap-2">
+                    <svg
+                      className="w-5 h-5"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Köszönjük megkeresését! Hamarosan felvesszük Önnel a
+                    kapcsolatot.
+                  </div>
+                )}
+                {contactStatus === "error" && (
+                  <div className="p-4 bg-red-500/10 border border-red-500/20 text-red-600 rounded-lg text-sm font-medium flex items-center gap-2">
+                    <svg
+                      className="w-5 h-5"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
+                    </svg>
+                    Hiba történt az üzenet küldésekor. Kérjük próbálja újra
+                    később.
+                  </div>
+                )}
+              </form>
             </div>
           </div>
         </div>
