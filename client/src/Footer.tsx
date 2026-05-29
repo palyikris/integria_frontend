@@ -1,6 +1,6 @@
 export default function Footer() {
   return (
-    <footer className="mt-10 py-6 border-t text-center text-sm text-slate-500">
+    <footer className="py-6 border-t text-center text-sm text-slate-500">
       <a href="/legal/privacy" className="mx-2">
         Adatvédelmi Tájékoztató
       </a>{" "}
