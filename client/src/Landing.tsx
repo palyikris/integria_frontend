@@ -5,7 +5,7 @@ export default function Landing() {
   const [isUpdating, setIsUpdating] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState("features");
-  const revealRefs = useRef([]);
+  const revealRefs = useRef<HTMLElement[]>([]);
 
   // Handle Navbar styling on scroll and active section
   useEffect(() => {
@@ -56,7 +56,7 @@ export default function Landing() {
     return () => observer.disconnect();
   }, []);
 
-  const addToRefs = (el) => {
+  const addToRefs = (el: HTMLElement | null) => {
     if (el && !revealRefs.current.includes(el)) {
       revealRefs.current.push(el);
     }
